@@ -29,6 +29,9 @@ data = pd.DataFrame({
     feats[3]: [right_distance]
 })
 
+# Asegurarse de que las columnas del DataFrame coincidan con las características esperadas
+data = data[feats]
+
 # Botón para predecir
 if st.button("Predecir"):
     # Escalar los datos
