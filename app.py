@@ -6,42 +6,39 @@ import joblib
 # Título de la app
 st.title("Predicción de Balance Scale")
 
-# Cargar el modelo y el codificador
+# Cargar el modelo, el codificador y el scaler
 modelo = joblib.load("final_model.pkl")
 label_encoder = joblib.load("label_encoder.pkl")
+scaler = joblib.load("scaler.pkl")
 
-# Mostrar las clases disponibles en el label_encoder
-st.write(f"Clases disponibles en el label_encoder: {label_encoder.classes_}")
+# Campos de entrada para los atributos del Balance Scale
+feats = ['Left-Weight', 'Left-Distance', 'Right-Weight', 'Right-Distance']
 
-# Ingreso de datos por el usuario
+# Ingreso de datos por el usuario 
 left_weight = st.slider("Peso del lado izquierdo", min_value=1, max_value=5, value=3)
 left_distance = st.slider("Distancia del lado izquierdo", min_value=1, max_value=5, value=3)
 right_weight = st.slider("Peso del lado derecho", min_value=1, max_value=5, value=3)
 right_distance = st.slider("Distancia del lado derecho", min_value=1, max_value=5, value=3)
 
-# Crear DataFrame con los datos de entrada
+# Crear DataFrame con los valores ingresados
 data = pd.DataFrame({
-    'Left-Weight': [left_weight],
-    'Left-Distance': [left_distance],
-    'Right-Weight': [right_weight],
-    'Right-Distance': [right_distance]
+    feats[0]: [left_weight],
+    feats[1]: [left_distance],
+    feats[2]: [right_weight],
+    feats[3]: [right_distance]
 })
 
 # Botón para predecir
 if st.button("Predecir"):
-    try:
-        # Predecir usando el modelo cargado
-        prediccion = modelo.predict(data)
-        
-        # Mostrar la predicción sin transformar para ver qué devuelve el modelo
-        st.write(f"Predicción sin transformar: {prediccion}")
+    # Escalar los datos
+    data_scaled = scaler.transform(data)
 
-        # Si el modelo devuelve un índice, lo mostramos con su clase correspondiente
-        clase_predicha = label_encoder.inverse_transform(prediccion)[0]
+    # Realizar la predicción
+    prediccion = modelo.predict(data_scaled)
+    
+    # Invertir la transformación del label encoder para obtener el valor original
+    clase_predicha = label_encoder.inverse_transform(prediccion)[0]
 
-        # Mostrar la predicción
-        st.write("### Resultado de la predicción:")
-        st.write(f"La balanza se inclinará hacia: **{clase_predicha}**")
-
-    except Exception as e:
-        st.write(f"Error en la predicción: {str(e)}")
+    # Mostrar la predicción
+    st.write("### Predicción del Modelo")
+    st.write(f"La balanza se inclinará hacia: **{clase_predicha}**")
