@@ -10,6 +10,9 @@ st.title("Predicción de Balance Scale")
 modelo = joblib.load("final_model.pkl")
 label_encoder = joblib.load("label_encoder.pkl")
 
+# Mostrar las clases disponibles en el label_encoder
+st.write(f"Clases disponibles en el label_encoder: {label_encoder.classes_}")
+
 # Ingreso de datos por el usuario (ajusta estos nombres si tus columnas son distintas)
 left_weight = st.slider("Peso del lado izquierdo", min_value=1, max_value=5, value=3)
 left_distance = st.slider("Distancia del lado izquierdo", min_value=1, max_value=5, value=3)
@@ -24,21 +27,22 @@ data = pd.DataFrame({
     'Right-Distance': [right_distance]
 })
 
-# Mostrar las clases disponibles en el label_encoder
-st.write(f"Clases disponibles en el label_encoder: {label_encoder.classes_}")
-
 # Botón para predecir
 if st.button("Predecir"):
     # Predecir usando el modelo cargado
     prediccion = modelo.predict(data)
-    
+
     # Mostrar la predicción antes de intentar usar el label_encoder
     st.write(f"Predicción del modelo: {prediccion}")
 
     try:
-        # Invertir la transformación de las predicciones usando el label_encoder
-        clase_predicha = label_encoder.inverse_transform(prediccion)[0]
-        st.write("### Resultado de la predicción:")
-        st.write(f"La balanza se inclinará hacia: **{clase_predicha}**")
+        # Verificar si la clase predicha está en las clases conocidas
+        if prediccion[0] in label_encoder.classes_:
+            # Invertir la transformación de las predicciones usando el label_encoder
+            clase_predicha = label_encoder.inverse_transform(prediccion)[0]
+            st.write("### Resultado de la predicción:")
+            st.write(f"La balanza se inclinará hacia: **{clase_predicha}**")
+        else:
+            st.write(f"Error: La clase predicha '{prediccion[0]}' no está registrada en el label_encoder.")
     except ValueError as e:
         st.write(f"Error en la predicción: {str(e)}")
