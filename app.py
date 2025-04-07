@@ -29,6 +29,9 @@ if st.button("Predecir"):
     # Predecir usando el modelo cargado
     prediccion = modelo.predict(data)
     clase_predicha = label_encoder.inverse_transform(prediccion)[0]
+    
+    st.write("Predicción cruda:", prediccion)
+    st.write("Clases conocidas por label_encoder:", label_encoder.classes_)
 
     st.write("### Resultado de la predicción:")
     st.write(f"La balanza se inclinará hacia: **{clase_predicha}**")
