@@ -36,6 +36,9 @@ if st.button("Predecir"):
     st.write(f"Predicción del modelo (antes de label_encoder): {prediccion}")
     
     try:
+        # Mostrar las clases del label_encoder para mayor claridad
+        st.write(f"Clases del label_encoder: {label_encoder.classes_}")
+
         # Verificar si la predicción es un array de cadenas (lo cual no es lo esperado)
         if isinstance(prediccion[0], str):  # Si el valor es una cadena (e.g., 'B')
             # Convertir la predicción a su índice usando label_encoder
@@ -47,5 +50,6 @@ if st.button("Predecir"):
         # Mostrar la predicción
         st.write("### Resultado de la predicción:")
         st.write(f"La balanza se inclinará hacia: **{clase_predicha}**")
+        
     except ValueError as e:
         st.write(f"Error en la predicción: {str(e)}")
