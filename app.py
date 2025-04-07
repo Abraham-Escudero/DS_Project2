@@ -9,6 +9,11 @@ st.title("Predicción de Balance Scale")
 # Cargar el modelo y el codificador
 modelo = joblib.load("final_model.pkl")
 label_encoder = joblib.load("label_encoder.pkl")
+pca = joblib.load('pca_model.pkl')
+scaler = joblib.load('scaler.pkl')
+
+# Campos de entrada para los atributos del Balance Scale
+feats = ['Left Weight', 'Left Distance', 'Right Weight', 'Right Distance']
 
 # Ingreso de datos por el usuario 
 left_weight = st.slider("Peso del lado izquierdo", min_value=1, max_value=5, value=3)
@@ -16,22 +21,28 @@ left_distance = st.slider("Distancia del lado izquierdo", min_value=1, max_value
 right_weight = st.slider("Peso del lado derecho", min_value=1, max_value=5, value=3)
 right_distance = st.slider("Distancia del lado derecho", min_value=1, max_value=5, value=3)
 
-# Crear DataFrame con los datos de entrada
+# Crear DataFrame con los valores ingresados
 data = pd.DataFrame({
-    'Left-Weight': [left_weight],
-    'Left-Distance': [left_distance],
-    'Right-Weight': [right_weight],
-    'Right-Distance': [right_distance]
+    feats[0]: [left_weight],
+    feats[1]: [left_distance],
+    feats[2]: [right_weight],
+    feats[3]: [right_distance]
 })
 
 # Botón para predecir
 if st.button("Predecir"):
-    # Predecir usando el modelo cargado
-    prediccion = modelo.predict(data)
-    clase_predicha = label_encoder.inverse_transform(prediccion)[0]
-    
-    st.write("Predicción cruda:", prediccion)
-    st.write("Clases conocidas por label_encoder:", label_encoder.classes_)
+    # Escalar los datos
+    data_scaled = scaler.transform(data)
 
-    st.write("### Resultado de la predicción:")
-    st.write(f"La balanza se inclinará hacia: **{clase_predicha}**")
+    # Aplicar PCA
+    data_pca = pca.transform(data_scaled)
+
+    # Realizar la predicción
+    prediccion = modelo.predict(data_pca)
+
+    # Invertir la transformación del label encoder para obtener el valor original
+    clase_predicha = label_encoder.inverse_transform(prediccion)[0]
+
+    # Mostrar la predicción
+    st.write("### Predicción del Modelo")
+    st.write(f"La clase predicha es: {clase_predicha}")
