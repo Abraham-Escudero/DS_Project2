@@ -29,27 +29,19 @@ data = pd.DataFrame({
 
 # Botón para predecir
 if st.button("Predecir"):
-    # Predecir usando el modelo cargado
-    prediccion = modelo.predict(data)
-    
-    # Mostrar la predicción antes de intentar usar el label_encoder
-    st.write(f"Predicción del modelo (antes de label_encoder): {prediccion}")
-    
     try:
-        # Mostrar las clases del label_encoder para mayor claridad
-        st.write(f"Clases del label_encoder: {label_encoder.classes_}")
+        # Predecir usando el modelo cargado
+        prediccion = modelo.predict(data)
+        
+        # Mostrar la predicción sin transformar para ver qué devuelve el modelo
+        st.write(f"Predicción sin transformar: {prediccion}")
 
-        # Verificar si la predicción es un array de cadenas (lo cual no es lo esperado)
-        if isinstance(prediccion[0], str):  # Si el valor es una cadena (e.g., 'B')
-            # Convertir la predicción a su índice usando label_encoder
-            prediccion = label_encoder.transform(prediccion)
-
-        # Ahora que la predicción es un índice, usamos inverse_transform para obtener la clase
+        # Si el modelo devuelve un índice, lo mostramos con su clase correspondiente
         clase_predicha = label_encoder.inverse_transform(prediccion)[0]
 
         # Mostrar la predicción
         st.write("### Resultado de la predicción:")
         st.write(f"La balanza se inclinará hacia: **{clase_predicha}**")
-        
-    except ValueError as e:
+
+    except Exception as e:
         st.write(f"Error en la predicción: {str(e)}")
