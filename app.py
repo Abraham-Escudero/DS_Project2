@@ -24,11 +24,21 @@ data = pd.DataFrame({
     'Right-Distance': [right_distance]
 })
 
+# Mostrar las clases disponibles en el label_encoder
+st.write(f"Clases disponibles en el label_encoder: {label_encoder.classes_}")
+
 # Botón para predecir
 if st.button("Predecir"):
     # Predecir usando el modelo cargado
     prediccion = modelo.predict(data)
-    clase_predicha = label_encoder.inverse_transform(prediccion)[0]
+    
+    # Mostrar la predicción antes de intentar usar el label_encoder
+    st.write(f"Predicción del modelo: {prediccion}")
 
-    st.write("### Resultado de la predicción:")
-    st.write(f"La balanza se inclinará hacia: **{clase_predicha}**")
+    try:
+        # Invertir la transformación de las predicciones usando el label_encoder
+        clase_predicha = label_encoder.inverse_transform(prediccion)[0]
+        st.write("### Resultado de la predicción:")
+        st.write(f"La balanza se inclinará hacia: **{clase_predicha}**")
+    except ValueError as e:
+        st.write(f"Error en la predicción: {str(e)}")
