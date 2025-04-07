@@ -9,7 +9,7 @@ st.title("Predicción de Balance Scale")
 # Cargar el modelo y el codificador
 modelo = joblib.load("final_model.pkl")
 label_encoder = joblib.load("label_encoder.pkl")
-pca = joblib.load('pca_model.pkl')
+pca = joblib.load('pca.pkl')
 scaler = joblib.load('scaler.pkl')
 
 # Campos de entrada para los atributos del Balance Scale
