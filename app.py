@@ -36,11 +36,13 @@ if st.button("Predecir"):
     st.write(f"Predicción del modelo (antes de label_encoder): {prediccion}")
 
     try:
-        # Asegurarnos de que la predicción sea un array de enteros
-        prediccion = np.array(prediccion).reshape(-1, 1)  # Convertir en array adecuado si es necesario
+        # Verificar si la predicción es un array de cadenas (lo cual no es lo esperado)
+        if isinstance(prediccion[0], str):  # Si el valor es una cadena (e.g., 'B')
+            # Convertir la predicción a su índice usando label_encoder
+            prediccion = label_encoder.transform(prediccion)
 
-        # Invertir la transformación de las predicciones usando el label_encoder
-        clase_predicha = label_encoder.inverse_transform(prediccion.flatten())[0]
+        # Ahora que la predicción es un índice, usamos inverse_transform para obtener la clase
+        clase_predicha = label_encoder.inverse_transform(prediccion)[0]
 
         # Mostrar la predicción
         st.write("### Resultado de la predicción:")
