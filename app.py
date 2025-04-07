@@ -31,18 +31,19 @@ data = pd.DataFrame({
 if st.button("Predecir"):
     # Predecir usando el modelo cargado
     prediccion = modelo.predict(data)
-
+    
     # Mostrar la predicción antes de intentar usar el label_encoder
-    st.write(f"Predicción del modelo: {prediccion}")
+    st.write(f"Predicción del modelo (antes de label_encoder): {prediccion}")
 
     try:
-        # Verificar si la clase predicha está en las clases conocidas
-        if prediccion[0] in label_encoder.classes_:
-            # Invertir la transformación de las predicciones usando el label_encoder
-            clase_predicha = label_encoder.inverse_transform(prediccion)[0]
-            st.write("### Resultado de la predicción:")
-            st.write(f"La balanza se inclinará hacia: **{clase_predicha}**")
-        else:
-            st.write(f"Error: La clase predicha '{prediccion[0]}' no está registrada en el label_encoder.")
+        # Asegurarnos de que la predicción sea un array de enteros
+        prediccion = np.array(prediccion).reshape(-1, 1)  # Convertir en array adecuado si es necesario
+
+        # Invertir la transformación de las predicciones usando el label_encoder
+        clase_predicha = label_encoder.inverse_transform(prediccion.flatten())[0]
+
+        # Mostrar la predicción
+        st.write("### Resultado de la predicción:")
+        st.write(f"La balanza se inclinará hacia: **{clase_predicha}**")
     except ValueError as e:
         st.write(f"Error en la predicción: {str(e)}")
