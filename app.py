@@ -13,7 +13,7 @@ label_encoder = joblib.load("label_encoder.pkl")
 # Mostrar las clases disponibles en el label_encoder
 st.write(f"Clases disponibles en el label_encoder: {label_encoder.classes_}")
 
-# Ingreso de datos por el usuario (ajusta estos nombres si tus columnas son distintas)
+# Ingreso de datos por el usuario
 left_weight = st.slider("Peso del lado izquierdo", min_value=1, max_value=5, value=3)
 left_distance = st.slider("Distancia del lado izquierdo", min_value=1, max_value=5, value=3)
 right_weight = st.slider("Peso del lado derecho", min_value=1, max_value=5, value=3)
@@ -34,6 +34,14 @@ if st.button("Predecir"):
     
     # Mostrar la predicción antes de intentar usar el label_encoder
     st.write(f"Predicción del modelo (antes de label_encoder): {prediccion}")
+    
+    # Obtener las probabilidades de cada clase
+    probabilidades = modelo.predict_proba(data)
+    
+    # Mostrar las probabilidades de cada clase
+    st.write("### Probabilidades de cada clase:")
+    for clase, probabilidad in zip(label_encoder.classes_, probabilidades[0]):
+        st.write(f"{clase}: {probabilidad:.2f}")
 
     try:
         # Verificar si la predicción es un array de cadenas (lo cual no es lo esperado)
