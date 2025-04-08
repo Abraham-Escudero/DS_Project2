@@ -12,7 +12,7 @@ label_encoder = joblib.load("label_encoder.pkl")
 scaler = joblib.load('scaler.pkl')
 
 # Definir las columnas que el modelo espera
-columnas_esperadas = ['Left Weight', 'Left Distance', 'Right Weight', 'Right Distance']
+columnas_esperadas = ['Peso_Izquierdo', 'Distancia_Izquierda', 'Peso_Derecho', 'Distancia_Derecha']
 
 # Ingreso de datos por el usuario
 left_weight = st.slider("Peso del lado izquierdo", min_value=1, max_value=5, value=3)
@@ -22,13 +22,13 @@ right_distance = st.slider("Distancia del lado derecho", min_value=1, max_value=
 
 # Crear DataFrame con los valores ingresados, asegurando que las columnas coincidan
 data = pd.DataFrame({
-    'Left Weight': [left_weight],
-    'Left Distance': [left_distance],
-    'Right Weight': [right_weight],
-    'Right Distance': [right_distance]
+    'Peso_Izquierdo': [left_weight],
+    'Distancia_Izquierda': [left_distance],
+    'Peso_Derecho': [right_weight],
+    'Distancia_Derecha': [right_distance]
 })
 
-# Mostrar los nombres de las columnas del DataFrame
+# Mostrar las columnas de entrada
 st.write("Columnas del DataFrame ingresado:", data.columns)
 
 # Asegurarse de que las columnas estén en el orden correcto
@@ -44,27 +44,30 @@ else:
     # Si las columnas son correctas, proceder con la predicción
     st.write("Datos ingresados:", data)
 
-    # Escalar los datos usando el scaler entrenado
-    data_scaled = scaler.transform(data)
+    try:
+        # Escalar los datos usando el scaler entrenado
+        data_scaled = scaler.transform(data)
 
-    # Botón para predecir
-    if st.button("Predecir"):
-        # Obtener las probabilidades de cada clase
-        probabilidades = modelo.predict_proba(data_scaled)
-        
-        # Predecir la clase con la mayor probabilidad
-        prediccion = np.argmax(probabilidades, axis=1)
-        
-        # Obtener la clase predicha
-        clase_predicha = label_encoder.inverse_transform(prediccion)[0]
+        # Botón para predecir
+        if st.button("Predecir"):
+            # Obtener las probabilidades de cada clase
+            probabilidades = modelo.predict_proba(data_scaled)
+            
+            # Predecir la clase con la mayor probabilidad
+            prediccion = np.argmax(probabilidades, axis=1)
+            
+            # Obtener la clase predicha
+            clase_predicha = label_encoder.inverse_transform(prediccion)[0]
 
-        # Mostrar las probabilidades
-        st.write(f"**Probabilidades**: {dict(zip(label_encoder.classes_, probabilidades[0]))}")
+            # Mostrar las probabilidades
+            st.write(f"**Probabilidades**: {dict(zip(label_encoder.classes_, probabilidades[0]))}")
 
-        # Mostrar la predicción
-        if clase_predicha == 'L':
-            st.write("### Predicción: La balanza se inclina hacia la izquierda")
-        elif clase_predicha == 'R':
-            st.write("### Predicción: La balanza se inclina hacia la derecha")
-        else:
-            st.write("### Predicción: La balanza está balanceada")
+            # Mostrar la predicción
+            if clase_predicha == 'L':
+                st.write("### Predicción: La balanza se inclina hacia la izquierda")
+            elif clase_predicha == 'R':
+                st.write("### Predicción: La balanza se inclina hacia la derecha")
+            else:
+                st.write("### Predicción: La balanza está balanceada")
+    except Exception as e:
+        st.error(f"Hubo un error durante la predicción: {e}")
