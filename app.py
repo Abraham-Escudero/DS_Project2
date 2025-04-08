@@ -31,9 +31,11 @@ data = pd.DataFrame({
 # Verificar que el DataFrame tiene las columnas correctas
 st.write("Datos ingresados:", data)
 
-# Escalar los datos (asegurándonos de que los nombres de las columnas coincidan con los del entrenamiento)
-# Asegúrate de que las columnas estén en el mismo orden que se usaron en el entrenamiento
+# Asegurarse de que las columnas estén en el orden correcto
 data = data[columnas_esperadas]
+
+# Verificar que las columnas estén correctamente ordenadas
+st.write("Datos reordenados:", data)
 
 # Escalar los datos usando el scaler entrenado
 data_scaled = scaler.transform(data)
