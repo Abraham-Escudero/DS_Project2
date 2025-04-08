@@ -11,8 +11,8 @@ modelo = joblib.load("final_model.pkl")
 label_encoder = joblib.load("label_encoder.pkl")
 scaler = joblib.load('scaler.pkl')
 
-# Campos de entrada para los atributos del Balance Scale
-feats = ['Left Weight', 'Left Distance', 'Right Weight', 'Right Distance']
+# Definir las columnas que el modelo espera
+columnas_esperadas = ['Left Weight', 'Left Distance', 'Right Weight', 'Right Distance']
 
 # Ingreso de datos por el usuario
 left_weight = st.slider("Peso del lado izquierdo", min_value=1, max_value=5, value=3)
@@ -20,7 +20,7 @@ left_distance = st.slider("Distancia del lado izquierdo", min_value=1, max_value
 right_weight = st.slider("Peso del lado derecho", min_value=1, max_value=5, value=3)
 right_distance = st.slider("Distancia del lado derecho", min_value=1, max_value=5, value=3)
 
-# Crear DataFrame con los valores ingresados (asegurando que las columnas tengan los mismos nombres)
+# Crear DataFrame con los valores ingresados, asegurando que las columnas coincidan
 data = pd.DataFrame({
     'Left Weight': [left_weight],
     'Left Distance': [left_distance],
@@ -32,6 +32,10 @@ data = pd.DataFrame({
 st.write("Datos ingresados:", data)
 
 # Escalar los datos (asegurándonos de que los nombres de las columnas coincidan con los del entrenamiento)
+# Asegúrate de que las columnas estén en el mismo orden que se usaron en el entrenamiento
+data = data[columnas_esperadas]
+
+# Escalar los datos usando el scaler entrenado
 data_scaled = scaler.transform(data)
 
 # Botón para predecir
