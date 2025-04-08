@@ -20,15 +20,18 @@ left_distance = st.slider("Distancia del lado izquierdo", min_value=1, max_value
 right_weight = st.slider("Peso del lado derecho", min_value=1, max_value=5, value=3)
 right_distance = st.slider("Distancia del lado derecho", min_value=1, max_value=5, value=3)
 
-# Crear DataFrame con los valores ingresados
+# Crear DataFrame con los valores ingresados (asegurando que las columnas tengan los mismos nombres)
 data = pd.DataFrame({
-    feats[0]: [left_weight],
-    feats[1]: [left_distance],
-    feats[2]: [right_weight],
-    feats[3]: [right_distance]
+    'Left Weight': [left_weight],
+    'Left Distance': [left_distance],
+    'Right Weight': [right_weight],
+    'Right Distance': [right_distance]
 })
 
-# Escalar los datos
+# Verificar que el DataFrame tiene las columnas correctas
+st.write("Datos ingresados:", data)
+
+# Escalar los datos (asegurándonos de que los nombres de las columnas coincidan con los del entrenamiento)
 data_scaled = scaler.transform(data)
 
 # Botón para predecir
