@@ -28,36 +28,43 @@ data = pd.DataFrame({
     'Right Distance': [right_distance]
 })
 
-# Verificar que el DataFrame tiene las columnas correctas
-st.write("Datos ingresados:", data)
+# Mostrar los nombres de las columnas del DataFrame
+st.write("Columnas del DataFrame ingresado:", data.columns)
 
 # Asegurarse de que las columnas estén en el orden correcto
-data = data[columnas_esperadas]
+# Eliminar espacios al principio y al final de los nombres de las columnas
+data.columns = data.columns.str.strip()
 
-# Verificar que las columnas estén correctamente ordenadas
-st.write("Datos reordenados:", data)
+# Verificar si las columnas coinciden con las esperadas
+if list(data.columns) != columnas_esperadas:
+    st.error("¡Error! Las columnas del DataFrame no coinciden con las esperadas.")
+    st.write("Columnas esperadas:", columnas_esperadas)
+    st.write("Columnas del DataFrame:", list(data.columns))
+else:
+    # Si las columnas son correctas, proceder con la predicción
+    st.write("Datos ingresados:", data)
 
-# Escalar los datos usando el scaler entrenado
-data_scaled = scaler.transform(data)
+    # Escalar los datos usando el scaler entrenado
+    data_scaled = scaler.transform(data)
 
-# Botón para predecir
-if st.button("Predecir"):
-    # Obtener las probabilidades de cada clase
-    probabilidades = modelo.predict_proba(data_scaled)
-    
-    # Predecir la clase con la mayor probabilidad
-    prediccion = np.argmax(probabilidades, axis=1)
-    
-    # Obtener la clase predicha
-    clase_predicha = label_encoder.inverse_transform(prediccion)[0]
+    # Botón para predecir
+    if st.button("Predecir"):
+        # Obtener las probabilidades de cada clase
+        probabilidades = modelo.predict_proba(data_scaled)
+        
+        # Predecir la clase con la mayor probabilidad
+        prediccion = np.argmax(probabilidades, axis=1)
+        
+        # Obtener la clase predicha
+        clase_predicha = label_encoder.inverse_transform(prediccion)[0]
 
-    # Mostrar las probabilidades
-    st.write(f"**Probabilidades**: {dict(zip(label_encoder.classes_, probabilidades[0]))}")
+        # Mostrar las probabilidades
+        st.write(f"**Probabilidades**: {dict(zip(label_encoder.classes_, probabilidades[0]))}")
 
-    # Mostrar la predicción
-    if clase_predicha == 'L':
-        st.write("### Predicción: La balanza se inclina hacia la izquierda")
-    elif clase_predicha == 'R':
-        st.write("### Predicción: La balanza se inclina hacia la derecha")
-    else:
-        st.write("### Predicción: La balanza está balanceada")
+        # Mostrar la predicción
+        if clase_predicha == 'L':
+            st.write("### Predicción: La balanza se inclina hacia la izquierda")
+        elif clase_predicha == 'R':
+            st.write("### Predicción: La balanza se inclina hacia la derecha")
+        else:
+            st.write("### Predicción: La balanza está balanceada")
